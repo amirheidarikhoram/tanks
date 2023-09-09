@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 465925942940790558}
   - component: {fileID: 2913358267622359677}
   - component: {fileID: 4054093560880939472}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Hit
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -74,7 +74,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_Sprite: {fileID: 1731826570, guid: 2b33dfba46c062bbea162c548731af48, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0

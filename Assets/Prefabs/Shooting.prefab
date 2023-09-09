@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4411155934665429282}
   - component: {fileID: 7723527101798800544}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Shooting
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -57,7 +57,7 @@ GameObject:
   - component: {fileID: 7991486625945793921}
   - component: {fileID: 6702438689023308108}
   - component: {fileID: 5878998472063559416}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: ShootingSprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}

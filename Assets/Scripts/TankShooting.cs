@@ -48,9 +48,9 @@ public class TankShooting : MonoBehaviour
 
         if (hit.collider != null)
         {
-            Instantiate(HitPrefab, hit.point, FirePoint.rotation);
+            Instantiate(HitPrefab, new Vector3(hit.point.x, hit.point.y, 10) , FirePoint.rotation);
         }
 
-        Instantiate(ProjectilePrefab, FirePoint.position, FirePoint.rotation);
+        Instantiate(ProjectilePrefab, new Vector3(FirePoint.position.x, FirePoint.position.y, 10), FirePoint.rotation);
     }
 }
