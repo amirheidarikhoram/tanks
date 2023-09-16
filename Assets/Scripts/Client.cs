@@ -9,11 +9,11 @@ public class Client : MonoBehaviour
 {
 
     public static List<Client> clients = new List<Client>();
+    public World World;
+    public bool HasDrawnTheBox = false;
     private Player player;
-
     private float nextMoveActionTime = 0.0f;
     public string Address;
-
     private readonly ConcurrentQueue<Action> _actions = new ConcurrentQueue<Action>();
 
     void Start()
@@ -65,7 +65,8 @@ public class Client : MonoBehaviour
             _actions.Enqueue(() => MessageHandler.hander.MatchAction(e.Data));
         };
 
-        ws.OnError += (sender, e) => {
+        ws.OnError += (sender, e) =>
+        {
             ws.Close();
             ws = null;
             _actions.Enqueue(() => Destroy(gameObject));
@@ -74,6 +75,12 @@ public class Client : MonoBehaviour
 
     void Update()
     {
+
+        if (World != null && !HasDrawnTheBox)
+        {
+            DrawWorlBox();
+        }
+
         while (_actions.Count > 0)
         {
             if (_actions.TryDequeue(out var action))
@@ -137,5 +144,28 @@ public class Client : MonoBehaviour
         clients.RemoveAt(clientIndex);
         ws.Close();
         Destroy(gameObject);
+    }
+
+    private void DrawWorlBox()
+    {
+        HasDrawnTheBox = true;
+
+        LineRenderer lineRenderer = GetComponent<LineRenderer>();
+        lineRenderer.positionCount = 5;
+        
+        if (World.northwest.Length != 2 && World.southeast.Length != 2) {
+            return;
+        }
+
+        lineRenderer.startColor = Color.green;
+        lineRenderer.endColor = Color.green;
+        lineRenderer.startWidth = 0.5f;
+        lineRenderer.endWidth = 0.5f;
+
+        lineRenderer.SetPosition(0, new Vector3(World.northwest[0], World.northwest[1], 0));
+        lineRenderer.SetPosition(1, new Vector3(World.southeast[0], World.northwest[1], 0));
+        lineRenderer.SetPosition(2, new Vector3(World.southeast[0], World.southeast[1], 0));
+        lineRenderer.SetPosition(3, new Vector3(World.northwest[0], World.southeast[1], 0));
+        lineRenderer.SetPosition(4, new Vector3(World.northwest[0], World.northwest[1], 0));
     }
 }

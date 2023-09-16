@@ -27,13 +27,13 @@ public class MessageHandler : MonoBehaviour
         if (actionUnion.g_type != null)
         {
             // game action
-
             MatchGameAction(actionUnion, message);
 
         }
         else if (actionUnion.s_type != null)
         {
             // server action
+            MathServerAction(actionUnion, message);
         }
         else if (actionUnion.type != null)
         {
@@ -53,9 +53,6 @@ public class MessageHandler : MonoBehaviour
             try
             {
                 CloseWorldsUpdateAction closeWorldsUpdateAction = JsonUtility.FromJson<CloseWorldsUpdateAction>(message);
-
-
-                
 
                 for (int i = 0; i < closeWorldsUpdateAction.worlds.Count; i++)
                 {
@@ -90,6 +87,21 @@ public class MessageHandler : MonoBehaviour
             {
                 Debug.LogError("exception");
                 Debug.LogError(exeption);
+            }
+        }
+    }
+
+    void MathServerAction(ActionUnion action, string message) {
+        if (action.s_type == "introduce_server") {
+            IntroduceServerAction introduceServerAction = JsonUtility.FromJson<IntroduceServerAction>(message);
+
+            World world = introduceServerAction.world;
+
+            Client client = Client.clients.Find((c) => c.Address == world.address);
+
+            if(client != null) {
+                client.World = world;
+                client.HasDrawnTheBox = false;
             }
         }
     }
