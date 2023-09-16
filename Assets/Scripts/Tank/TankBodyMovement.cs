@@ -23,12 +23,15 @@ public class TankBodyMovement : MonoBehaviour
     private void Update()
     {
 
-        if (isControlled) {
+        if (isControlled)
+        {
             float horizontalInput = Input.GetAxis("Horizontal");
             float verticalInput = Input.GetAxis("Vertical");
 
             RotateTank(horizontalInput);
             MoveTank(verticalInput);
+
+            Client.EmitMoveAction(GetComponent<Transform>(), GetComponentInChildren<TankTurret>().GetComponent<Transform>());
         }
     }
 

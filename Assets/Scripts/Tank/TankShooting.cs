@@ -29,8 +29,6 @@ public class TankShooting : MonoBehaviour
             {
                 Shoot();
                 fireCooldown = Time.time + (1 / fireRate);
-                Debug.Log("cooldown" + fireCooldown.ToString());
-                Debug.Log("time" + Time.time.ToString());
             }
 
         }
@@ -38,7 +36,9 @@ public class TankShooting : MonoBehaviour
 
     void Shoot()
     {
-        audioSource.Play();
+        // audioSource.Play();
+
+        Vector2 fireDirection = FirePoint.up;
         
         Ray2D ray = new Ray2D(FirePoint.position, FirePoint.up);
 
@@ -52,5 +52,17 @@ public class TankShooting : MonoBehaviour
         }
 
         Instantiate(ProjectilePrefab, new Vector3(FirePoint.position.x, FirePoint.position.y, 10), FirePoint.rotation);
+
+        Client.Emit(new FireAction () {
+            playerId = "1",
+            firePosition = new float[2] {
+                FirePoint.position.x,
+                FirePoint.position.y
+            },
+            fireDirection = new float[2] {
+                FirePoint.position.x,
+                FirePoint.position.y
+            },
+        });
     }
 }
