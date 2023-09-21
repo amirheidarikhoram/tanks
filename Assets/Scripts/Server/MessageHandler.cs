@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using Unity.VisualScripting.ReorderableList.Element_Adder_Menu;
 using UnityEngine;
 
 public class MessageHandler : MonoBehaviour
@@ -7,6 +9,7 @@ public class MessageHandler : MonoBehaviour
 
     public static MessageHandler hander;
     public GameObject HitPrefab;
+    public GameObject TankPrefab;
     public Client ClientPrefab;
 
     void Start()
@@ -21,7 +24,7 @@ public class MessageHandler : MonoBehaviour
         }
     }
 
-    public void MatchAction(string message)
+    public void MatchAction(string message, Client client)
     {
         Debug.Log(message);
 
@@ -30,7 +33,7 @@ public class MessageHandler : MonoBehaviour
         if (actionUnion.g_type != null)
         {
             // game action
-            MatchGameAction(actionUnion, message);
+            MatchGameAction(actionUnion, message, client);
 
         }
         else if (actionUnion.s_type != null)
@@ -49,7 +52,7 @@ public class MessageHandler : MonoBehaviour
         }
     }
 
-    void MatchGameAction(ActionUnion action, string message)
+    void MatchGameAction(ActionUnion action, string message, Client receiver)
     {
 
         if (action.g_type == "close_worlds_update")
@@ -91,6 +94,29 @@ public class MessageHandler : MonoBehaviour
             {
                 Debug.LogError("exception");
                 Debug.LogError(exeption);
+            }
+        }
+        else if (action.g_type == "player_join")
+        {
+            JoinWorldAction joinAction = JsonUtility.FromJson<JoinWorldAction>(message);
+
+            receiver.AddPlayer(joinAction.player);
+            GameObject tankObject = Instantiate(TankPrefab, new Vector3(joinAction.player.transform.position[0], joinAction.player.transform.position[1], 10), new Quaternion(0, 0, 0, 0));
+
+            Tank tank = tankObject.GetComponent<Tank>(); 
+            tank.Id = joinAction.player.id;
+            tank.UpdateWithPlayer(joinAction.player);
+        } else if (action.g_type == "die") {
+
+            Debug.Log("HI");
+
+            DieAction dieAction = JsonUtility.FromJson<DieAction>(message);
+
+            Tank tank = FindObjectsOfType<Tank>().ToList().Find(t => t.Id == dieAction.playerId);
+
+            if (tank != null) {
+                Destroy(tank.gameObject);
+                receiver.RemovePlayer(dieAction.playerId);
             }
         }
     }

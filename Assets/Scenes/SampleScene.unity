@@ -353,6 +353,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27f21f1e879f3d6fcaf819187c2c974b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  HitPrefab: {fileID: 7071584195524064385, guid: aae3d52b3ecc0d877a2b96942ec70dd4, type: 3}
+  TankPrefab: {fileID: 8124006855969306549, guid: f0d50418ff3265811b220176f46f036b, type: 3}
   ClientPrefab: {fileID: 28611509855948315, guid: cfe1b9ea910675583bbdd912697187c4, type: 3}
 --- !u!4 &1129176966
 Transform:

@@ -40,9 +40,6 @@ public class TankShooting : MonoBehaviour
 
         Vector2 fireDirection = FirePoint.up;
 
-        Debug.Log(FirePoint.position);
-        Debug.Log(fireDirection);
-        
         Ray2D ray = new Ray2D(FirePoint.position, FirePoint.up);
 
         float maxRayDistance = 10000f;

@@ -15,6 +15,7 @@ public class Client : MonoBehaviour
     private float nextMoveActionTime = 0.0f;
     public string Address;
     private readonly ConcurrentQueue<Action> _actions = new ConcurrentQueue<Action>();
+    private List<Player> players = new List<Player>();
 
     void Start()
     {
@@ -62,7 +63,7 @@ public class Client : MonoBehaviour
         ws.OnMessage += (sender, e) =>
         {
             // Debug.Log(e.Data);
-            _actions.Enqueue(() => MessageHandler.hander.MatchAction(e.Data));
+            _actions.Enqueue(() => MessageHandler.hander.MatchAction(e.Data, this));
         };
 
         ws.OnError += (sender, e) =>
@@ -167,5 +168,23 @@ public class Client : MonoBehaviour
         lineRenderer.SetPosition(2, new Vector3(World.southeast[0], World.southeast[1], 0));
         lineRenderer.SetPosition(3, new Vector3(World.northwest[0], World.southeast[1], 0));
         lineRenderer.SetPosition(4, new Vector3(World.northwest[0], World.northwest[1], 0));
+    }
+
+    public void RemovePlayer(string playerId) {
+        int index = players.FindIndex((p) => p.id == playerId);
+
+        if (index > -1) {
+            players.RemoveAt(index);
+        }
+    }
+
+    public void AddPlayer(Player player) {
+        int index = players.FindIndex((p) => p.id == player.id);
+
+        if (index > -1) {
+            Debug.LogError("We have this player");
+        } else {
+            players.Add(player);
+        }
     }
 }
