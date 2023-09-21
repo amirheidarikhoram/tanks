@@ -39,7 +39,7 @@ public class MessageHandler : MonoBehaviour
         else if (actionUnion.s_type != null)
         {
             // server action
-            MatchServerAction(actionUnion, message);
+            MatchServerAction(actionUnion, message, client);
         }
         else if (actionUnion.type != null)
         {
@@ -101,27 +101,23 @@ public class MessageHandler : MonoBehaviour
             JoinWorldAction joinAction = JsonUtility.FromJson<JoinWorldAction>(message);
 
             receiver.AddPlayer(joinAction.player);
-            GameObject tankObject = Instantiate(TankPrefab, new Vector3(joinAction.player.transform.position[0], joinAction.player.transform.position[1], 10), new Quaternion(0, 0, 0, 0));
-
-            Tank tank = tankObject.GetComponent<Tank>(); 
-            tank.Id = joinAction.player.id;
-            tank.UpdateWithPlayer(joinAction.player);
-        } else if (action.g_type == "die") {
-
-            Debug.Log("HI");
+            CreateTank(joinAction.player);
+        }
+        else if (action.g_type == "die")
+        {
 
             DieAction dieAction = JsonUtility.FromJson<DieAction>(message);
 
             Tank tank = FindObjectsOfType<Tank>().ToList().Find(t => t.Id == dieAction.playerId);
-
-            if (tank != null) {
+            if (tank != null)
+            {
                 Destroy(tank.gameObject);
                 receiver.RemovePlayer(dieAction.playerId);
             }
         }
     }
 
-    void MatchServerAction(ActionUnion action, string message)
+    void MatchServerAction(ActionUnion action, string message, Client receiver)
     {
         if (action.s_type == "introduce_server")
         {
@@ -135,6 +131,20 @@ public class MessageHandler : MonoBehaviour
             {
                 client.World = world;
                 client.HasDrawnTheBox = false;
+            }
+
+            if (introduceServerAction.players != null)
+            {
+                for (int i = 0; i < introduceServerAction.players.Count; i++)
+                {
+                    Player player = introduceServerAction.players[i];
+
+                    if (!tankExists(player.id))
+                    {
+                        receiver.AddPlayer(player);
+                        CreateTank(introduceServerAction.players[i]);
+                    }
+                }
             }
         }
     }
@@ -152,6 +162,20 @@ public class MessageHandler : MonoBehaviour
 
             // TODO: check if the player is in this world, and yes decrease hp
         }
+    }
+
+    void CreateTank(Player player)
+    {
+        GameObject tankObject = Instantiate(TankPrefab, new Vector3(player.transform.position[0], player.transform.position[1], 10), new Quaternion(0, 0, 0, 0));
+        Tank tank = tankObject.GetComponent<Tank>();
+        tank.Id = player.id;
+        tank.UpdateWithPlayer(player);
+    }
+
+    bool tankExists(string playerId)
+    {
+        Tank tank = FindObjectsOfType<Tank>().ToList().Find(t => t.Id == playerId);
+        return tank != null;
     }
 }
 
