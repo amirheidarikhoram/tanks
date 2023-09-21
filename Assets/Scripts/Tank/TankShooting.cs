@@ -39,6 +39,9 @@ public class TankShooting : MonoBehaviour
         // audioSource.Play();
 
         Vector2 fireDirection = FirePoint.up;
+
+        Debug.Log(FirePoint.position);
+        Debug.Log(fireDirection);
         
         Ray2D ray = new Ray2D(FirePoint.position, FirePoint.up);
 
@@ -60,8 +63,8 @@ public class TankShooting : MonoBehaviour
                 FirePoint.position.y
             },
             fireDirection = new float[2] {
-                FirePoint.position.x,
-                FirePoint.position.y
+                fireDirection.x,
+                fireDirection.y
             },
         });
     }

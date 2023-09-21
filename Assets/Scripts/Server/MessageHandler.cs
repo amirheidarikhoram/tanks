@@ -6,6 +6,7 @@ public class MessageHandler : MonoBehaviour
 {
 
     public static MessageHandler hander;
+    public GameObject HitPrefab;
     public Client ClientPrefab;
 
     void Start()
@@ -22,6 +23,8 @@ public class MessageHandler : MonoBehaviour
 
     public void MatchAction(string message)
     {
+        Debug.Log(message);
+
         ActionUnion actionUnion = JsonUtility.FromJson<ActionUnion>(message);
 
         if (actionUnion.g_type != null)
@@ -33,11 +36,12 @@ public class MessageHandler : MonoBehaviour
         else if (actionUnion.s_type != null)
         {
             // server action
-            MathServerAction(actionUnion, message);
+            MatchServerAction(actionUnion, message);
         }
         else if (actionUnion.type != null)
         {
             // an action!
+            MatchAction(actionUnion, message);
         }
         else
         {
@@ -91,18 +95,38 @@ public class MessageHandler : MonoBehaviour
         }
     }
 
-    void MathServerAction(ActionUnion action, string message) {
-        if (action.s_type == "introduce_server") {
+    void MatchServerAction(ActionUnion action, string message)
+    {
+        if (action.s_type == "introduce_server")
+        {
             IntroduceServerAction introduceServerAction = JsonUtility.FromJson<IntroduceServerAction>(message);
 
             World world = introduceServerAction.world;
 
             Client client = Client.clients.Find((c) => c.Address == world.address);
 
-            if(client != null) {
+            if (client != null)
+            {
                 client.World = world;
                 client.HasDrawnTheBox = false;
             }
         }
     }
+
+    void MatchAction(ActionUnion action, string message)
+    {
+        if (action.type == "fire_response")
+        {
+            FireActionResponse response = JsonUtility.FromJson<FireActionResponse>(message);
+
+            if (response.didHit)
+            {
+                Instantiate(HitPrefab, new Vector3(response.hitPosition[0], response.hitPosition[1], 10), new Quaternion(0, 0, 0, 0));
+            }
+
+            // TODO: check if the player is in this world, and yes decrease hp
+        }
+    }
 }
+
+

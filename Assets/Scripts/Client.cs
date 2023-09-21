@@ -78,7 +78,7 @@ public class Client : MonoBehaviour
 
         if (World != null && !HasDrawnTheBox)
         {
-            DrawWorlBox();
+            DrawWorldBox();
         }
 
         while (_actions.Count > 0)
@@ -146,7 +146,7 @@ public class Client : MonoBehaviour
         Destroy(gameObject);
     }
 
-    private void DrawWorlBox()
+    private void DrawWorldBox()
     {
         HasDrawnTheBox = true;
 
