@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using WebSocketSharp;
 
@@ -144,6 +146,7 @@ public class Client : MonoBehaviour
         int clientIndex = clients.FindIndex((c) => c.Address == this.Address);
         clients.RemoveAt(clientIndex);
         ws.Close();
+        RemoveAllPlayersAndTanks();
         Destroy(gameObject);
     }
 
@@ -185,6 +188,21 @@ public class Client : MonoBehaviour
             Debug.LogError("We have this player");
         } else {
             players.Add(player);
+        }
+    }
+
+    public void RemoveAllPlayersAndTanks () {
+        for (int i = 0; i < players.Count; i++) {
+            Player player = players[i];
+
+            Debug.Log("destroying player " + JsonUtility.ToJson(player));
+
+            Tank tank = FindObjectsOfType<Tank>().ToList().Find(t => t.Id == player.id);
+            if (tank != null)
+            {
+                Debug.Log("Should get destroyed " + player.id);
+                Destroy(tank.gameObject);
+            }
         }
     }
 }
