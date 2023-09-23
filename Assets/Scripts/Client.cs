@@ -19,11 +19,18 @@ public class Client : MonoBehaviour
     private readonly ConcurrentQueue<Action> _actions = new ConcurrentQueue<Action>();
     private List<Player> players = new List<Player>();
 
+    private static string DefaultAddress = "";
+
+    void Awake()
+    {
+        DefaultAddress = PlayerPrefs.GetString("address");
+    }
+
     void Start()
     {
         if (clients.Count == 0)
         {
-            Connect("ws://127.0.0.1:9000");
+            Connect(DefaultAddress);
         }
     }
 
@@ -47,7 +54,7 @@ public class Client : MonoBehaviour
         player = new Player()
         {
             hp = 100,
-            id = "1",
+            id = tank.GetComponent<Tank>().Id,
             lastFireTS = 1,
             transform = new PlayerTransform()
             {
@@ -65,7 +72,7 @@ public class Client : MonoBehaviour
         ws.OnMessage += (sender, e) =>
         {
             // Debug.Log(e.Data);
-            _actions.Enqueue(() => MessageHandler.hander.MatchAction(e.Data, this));
+            _actions.Enqueue(() => MessageHandler.handler.MatchAction(e.Data, this));
         };
 
         ws.OnError += (sender, e) =>
@@ -156,8 +163,9 @@ public class Client : MonoBehaviour
 
         LineRenderer lineRenderer = GetComponent<LineRenderer>();
         lineRenderer.positionCount = 5;
-        
-        if (World.northwest.Length != 2 && World.southeast.Length != 2) {
+
+        if (World.northwest.Length != 2 && World.southeast.Length != 2)
+        {
             return;
         }
 
@@ -173,29 +181,79 @@ public class Client : MonoBehaviour
         lineRenderer.SetPosition(4, new Vector3(World.northwest[0], World.northwest[1], 0));
     }
 
-    public void RemovePlayer(string playerId) {
+    public static void RemovePlayer(string playerId)
+    {
+
+        for (int i = 0; i < clients.Count; i++)
+        {
+            List<Player> players = clients[i].players;
+
+            int index = players.FindIndex((p) => p.id == playerId);
+
+            if (index > -1)
+            {
+                players.RemoveAt(index);
+            }
+        }
+    }
+
+    public bool RemoveClientPlayer(string playerId)
+    {
         int index = players.FindIndex((p) => p.id == playerId);
 
-        if (index > -1) {
+        if (index > -1)
+        {
             players.RemoveAt(index);
+            return true;
         }
+
+        return false;
     }
 
-    public void AddPlayer(Player player) {
+    public static bool CheckIfPlayerIsConnectedToAnyWorld(string playerId, Client checker)
+    {
+
+        for (int i = 0; i < clients.Count; i++)
+        {
+
+            if (checker != clients[i])
+            {
+
+
+                List<Player> players = clients[i].players;
+                int index = players.FindIndex((p) => p.id == playerId);
+
+                if (index > 1)
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+
+    }
+
+    public bool AddPlayer(Player player)
+    {
         int index = players.FindIndex((p) => p.id == player.id);
 
-        if (index > -1) {
-            Debug.LogError("We have this player");
-        } else {
+        if (index > -1)
+        {
+            return false;
+        }
+        else
+        {
             players.Add(player);
+            return true;
         }
     }
 
-    public void RemoveAllPlayersAndTanks () {
-        for (int i = 0; i < players.Count; i++) {
+    public void RemoveAllPlayersAndTanks()
+    {
+        for (int i = 0; i < players.Count; i++)
+        {
             Player player = players[i];
-
-            Debug.Log("destroying player " + JsonUtility.ToJson(player));
 
             Tank tank = FindObjectsOfType<Tank>().ToList().Find(t => t.Id == player.id);
             if (tank != null)

@@ -1,22 +1,22 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting.ReorderableList.Element_Adder_Menu;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class MessageHandler : MonoBehaviour
 {
 
-    public static MessageHandler hander;
+    public static MessageHandler handler;
     public GameObject HitPrefab;
     public GameObject TankPrefab;
     public Client ClientPrefab;
 
     void Start()
     {
-        if (hander == null)
+        if (handler == null)
         {
-            hander = this;
+            handler = this;
         }
         else
         {
@@ -100,8 +100,28 @@ public class MessageHandler : MonoBehaviour
         {
             JoinWorldAction joinAction = JsonUtility.FromJson<JoinWorldAction>(message);
 
-            receiver.AddPlayer(joinAction.player);
-            CreateTank(joinAction.player);
+            if (receiver.AddPlayer(joinAction.player))
+            {
+
+                if (!Client.CheckIfPlayerIsConnectedToAnyWorld(joinAction.player.id, receiver))
+                {
+                    CreateTank(joinAction.player);
+                }
+            }
+        }
+        else if (action.g_type == "player_disconnect")
+        {
+            PlayerDisconnectAction disconnectAction = JsonUtility.FromJson<PlayerDisconnectAction>(message);
+            Tank tank = FindObjectsOfType<Tank>().ToList().Find(t => t.Id == disconnectAction.playerId);
+
+            if (receiver.RemoveClientPlayer(disconnectAction.playerId))
+            {
+
+                if (!Client.CheckIfPlayerIsConnectedToAnyWorld(disconnectAction.playerId, receiver))
+                {
+                    Destroy(tank.gameObject);
+                }
+            }
         }
         else if (action.g_type == "die")
         {
@@ -111,8 +131,27 @@ public class MessageHandler : MonoBehaviour
             Tank tank = FindObjectsOfType<Tank>().ToList().Find(t => t.Id == dieAction.playerId);
             if (tank != null)
             {
+
+
                 Destroy(tank.gameObject);
-                receiver.RemovePlayer(dieAction.playerId);
+                Client.RemovePlayer(dieAction.playerId);
+                
+                if (tank.name == "UserTank") {
+                    SceneManager.LoadScene("DieScene");
+                }
+            }
+        }
+        else if (action.g_type == "player_state_update")
+        {
+            Debug.Log("handling state update");
+            PlayerStateUpdateAction updateAction = JsonUtility.FromJson<PlayerStateUpdateAction>(message);
+            Debug.Log("2");
+
+
+            Tank tank = FindObjectsOfType<Tank>().ToList().Find(t => t.Id == updateAction.player.id);
+            if (tank != null)
+            {
+                tank.UpdateWithPlayer(updateAction.player);
             }
         }
     }

@@ -40,17 +40,6 @@ public class TankShooting : MonoBehaviour
 
         Vector2 fireDirection = FirePoint.up;
 
-        Ray2D ray = new Ray2D(FirePoint.position, FirePoint.up);
-
-        float maxRayDistance = 10000f;
-
-        RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction, maxRayDistance);
-
-        if (hit.collider != null)
-        {
-            Instantiate(HitPrefab, new Vector3(hit.point.x, hit.point.y, 10) , FirePoint.rotation);
-        }
-
         Instantiate(ProjectilePrefab, new Vector3(FirePoint.position.x, FirePoint.position.y, 10), FirePoint.rotation);
 
         Client.Emit(new FireAction () {

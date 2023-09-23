@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -12,12 +13,35 @@ public class Tank : MonoBehaviour
 
     public string Id;
 
+    void Awake()
+    {
+        if (IsControlled)
+        {
+            Id = Guid.NewGuid().ToString();
+        }
+    }
+
+    void Update()
+    {
+        if (IsControlled)
+        {
+            Camera camera = FindObjectOfType<Camera>();
+
+            if (camera != null)
+            {
+                camera.transform.position = new Vector3(transform.position.x, transform.position.y, camera.transform.position.z);
+            }
+
+        }
+
+    }
+
     public void UpdateWithPlayer(Player player)
     {
 
         Debug.Log(JsonUtility.ToJson(player));
 
-        TankTurret turret = GetComponent<TankTurret>();
+        TankTurret turret = GetComponentInChildren<TankTurret>();
         turret.transform.rotation = Quaternion.Euler(player.transform.rotation[0], player.transform.rotation[1], player.transform.rotation[2]);
 
         transform.position = new Vector3(player.transform.position[0], player.transform.position[1], 10);
