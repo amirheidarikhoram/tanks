@@ -6,9 +6,13 @@ public class AnimationDestroy : MonoBehaviour
 {
 
     public float LifeTime = 1.0f;
+    public bool isActive = true;
 
     void Start()
     {
-        Destroy(gameObject, LifeTime);
+        if (isActive)
+        {
+            Destroy(gameObject, LifeTime);
+        }
     }
 }

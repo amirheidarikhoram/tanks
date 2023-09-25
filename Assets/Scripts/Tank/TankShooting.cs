@@ -40,6 +40,8 @@ public class TankShooting : MonoBehaviour
 
         Vector2 fireDirection = FirePoint.up;
 
+        Debug.Log(fireDirection);
+
         Instantiate(ProjectilePrefab, new Vector3(FirePoint.position.x, FirePoint.position.y, 10), FirePoint.rotation);
 
         Client.Emit(new FireAction () {

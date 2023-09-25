@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -8,6 +9,7 @@ public class MessageHandler : MonoBehaviour
 {
 
     public static MessageHandler handler;
+    public GameObject FirePrefab;
     public GameObject HitPrefab;
     public GameObject TankPrefab;
     public Client ClientPrefab;
@@ -26,7 +28,7 @@ public class MessageHandler : MonoBehaviour
 
     public void MatchAction(string message, Client client)
     {
-        Debug.Log(message);
+        // Debug.Log(message);
 
         ActionUnion actionUnion = JsonUtility.FromJson<ActionUnion>(message);
 
@@ -132,21 +134,18 @@ public class MessageHandler : MonoBehaviour
             if (tank != null)
             {
 
+                if (tank.name == "UserTank")
+                {
+                    SceneManager.LoadScene("DieScene");
+                }
 
                 Destroy(tank.gameObject);
                 Client.RemovePlayer(dieAction.playerId);
-                
-                if (tank.name == "UserTank") {
-                    SceneManager.LoadScene("DieScene");
-                }
             }
         }
         else if (action.g_type == "player_state_update")
         {
-            Debug.Log("handling state update");
             PlayerStateUpdateAction updateAction = JsonUtility.FromJson<PlayerStateUpdateAction>(message);
-            Debug.Log("2");
-
 
             Tank tank = FindObjectsOfType<Tank>().ToList().Find(t => t.Id == updateAction.player.id);
             if (tank != null)
@@ -190,16 +189,25 @@ public class MessageHandler : MonoBehaviour
 
     void MatchAction(ActionUnion action, string message)
     {
-        if (action.type == "fire_response")
+        if (action.type == "fire")
+        {
+            Debug.Log(message);
+
+            FireAction fireAction = JsonUtility.FromJson<FireAction>(message);
+            Vector2 direction2D = new Vector2(fireAction.fireDirection[0], fireAction.fireDirection[1]);
+            direction2D.Normalize();
+            float angle = (Mathf.Atan2(direction2D.y, direction2D.x) * Mathf.Rad2Deg) - 90;
+            Instantiate(FirePrefab, new Vector3(fireAction.firePosition[0], fireAction.firePosition[1]), Quaternion.Euler(0, 0, angle));
+        }
+        else if (action.type == "fire_response")
         {
             FireActionResponse response = JsonUtility.FromJson<FireActionResponse>(message);
 
             if (response.didHit)
             {
-                Instantiate(HitPrefab, new Vector3(response.hitPosition[0], response.hitPosition[1], 10), new Quaternion(0, 0, 0, 0));
+                Debug.Log(message);
+                Instantiate(HitPrefab, new Vector3(response.hitPosition[0], response.hitPosition[1], 0), new Quaternion(0, 0, 0, 0));
             }
-
-            // TODO: check if the player is in this world, and yes decrease hp
         }
     }
 

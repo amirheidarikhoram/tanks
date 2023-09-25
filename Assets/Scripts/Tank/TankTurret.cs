@@ -19,7 +19,7 @@ public class TankTurret : MonoBehaviour
         {
             Vector3 aimPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             Aim(aimPosition);
-            Client.EmitMoveAction(GetComponentInParent<Transform>(), GetComponent<Transform>());
+            Client.EmitMoveAction(GetComponentInParent<Tank>().transform, GetComponent<Transform>());
         }
     }
 

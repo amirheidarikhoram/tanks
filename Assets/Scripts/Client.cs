@@ -59,9 +59,9 @@ public class Client : MonoBehaviour
             transform = new PlayerTransform()
             {
                 position = new float[2] { transform.position.x, transform.position.y },
-                rotation = new float[3] { transform.rotation.x, transform.rotation.y, transform.rotation.z },
+                rotation = new float[4] { transform.rotation.x, transform.rotation.y, transform.rotation.z, transform.rotation.w },
             },
-            turretRotation = new float[3] { turretTransform.rotation.x, turretTransform.rotation.y, turretTransform.rotation.z }
+            turretRotation = new float[4] { turretTransform.rotation.x, turretTransform.rotation.y, turretTransform.rotation.z, transform.rotation.w }
         };
 
         ws.Send(JsonUtility.ToJson(new JoinAction()
@@ -126,9 +126,9 @@ public class Client : MonoBehaviour
             transform = transform == null ? null : new PlayerTransform()
             {
                 position = new float[2] { transform.position.x, transform.position.y },
-                rotation = new float[3] { transform.rotation.x, transform.rotation.y, transform.rotation.z },
+                rotation = new float[4] { transform.rotation.x, transform.rotation.y, transform.rotation.z, transform.rotation.w },
             },
-            turretRotation = turretTransform == null ? null : new float[3] { turretTransform.rotation.x, turretTransform.rotation.y, turretTransform.rotation.z }
+            turretRotation = turretTransform == null ? null : new float[4] { turretTransform.rotation.x, turretTransform.rotation.y, turretTransform.rotation.z, turretTransform.rotation.w }
         });
 
         if (Time.time >= nextMoveActionTime)
@@ -136,7 +136,7 @@ public class Client : MonoBehaviour
 
 
             ws.Send(message);
-            nextMoveActionTime = Time.time + 0.2f;
+            nextMoveActionTime = Time.time + 0.1f;
         }
     }
 

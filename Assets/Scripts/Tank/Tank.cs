@@ -39,12 +39,12 @@ public class Tank : MonoBehaviour
     public void UpdateWithPlayer(Player player)
     {
 
-        Debug.Log(JsonUtility.ToJson(player));
+        // Debug.Log(JsonUtility.ToJson(player));
 
         TankTurret turret = GetComponentInChildren<TankTurret>();
-        turret.transform.rotation = Quaternion.Euler(player.transform.rotation[0], player.transform.rotation[1], player.transform.rotation[2]);
+        turret.transform.rotation = new Quaternion(player.turretRotation[0], player.turretRotation[1], player.turretRotation[2], player.turretRotation[3]);
 
         transform.position = new Vector3(player.transform.position[0], player.transform.position[1], 10);
-        transform.rotation = Quaternion.Euler(player.transform.rotation[0], player.transform.rotation[1], player.transform.rotation[2]);
+        transform.rotation = new Quaternion(player.transform.rotation[0], player.transform.rotation[1], player.transform.rotation[2], player.transform.rotation[3]);
     }
 }
