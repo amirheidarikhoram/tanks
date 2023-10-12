@@ -1,0 +1,2 @@
+## Tanks Game
+This is the main repository for the tanks game developed in unity. Most of the logic related to its distributed nature can be found [here](https://github.com/amirheidarikhoram/tanks-server).
